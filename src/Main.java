@@ -4,17 +4,16 @@ import java.util.Set;
 
 @Slf4j
 public class Main {
-    private static final int SIM_CYCLES = 4;
-    private static final int MAX_RATE_LIMITTER_CAPACITY = 3;
-    private static final int REFILLL_RATE = 1;
+    private static final int SIM_CYCLES = 10;
+    private static final int MAX_RATE_LIMITTER_CAPACITY = 4;
+    private static final int REFILL_RATE = 2;
 
     private static final int MAX_REQUEST_LATENCY = 5;
-    private static final int MAX_REQUESTS_PER_CYCLE = 10;
-
+    private static final int MAX_REQUESTS_PER_CYCLE = 5;
 
     public void run(int cycles) {
-        RateLimiter rateLimiter = new RateLimiter(REFILLL_RATE, MAX_RATE_LIMITTER_CAPACITY);
-        Server server = new Server(rateLimiter);
+        RateLimiter rateLimiter = new RateLimiter(REFILL_RATE, MAX_RATE_LIMITTER_CAPACITY);
+        Server server = new Server(rateLimiter, 1);
 
         for (int i = 0; i < cycles; i++) {
             // Add all requests to the server
