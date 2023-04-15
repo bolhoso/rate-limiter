@@ -1,6 +1,6 @@
 import lombok.extern.slf4j.Slf4j;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class Main {
@@ -13,28 +13,34 @@ public class Main {
 
     public void run(int cycles) {
         RateLimiter rateLimiter = new RateLimiter(REFILL_RATE, MAX_RATE_LIMITTER_CAPACITY);
-        Server server = new Server(rateLimiter, 1);
+        MetricsEmitter metricsEmitter = new MetricsEmitter();
 
+        Server server = new Server(rateLimiter, 3, metricsEmitter);
         for (int i = 0; i < cycles; i++) {
-            // Add all requests to the server
-            for (Request r : generateRequests()) {
-                server.receive(r);
-            }
-
+            server.receiveAll(generateRequests());
             server.processCycle();
         }
+
+        processMetrics(metricsEmitter);
     }
 
-    private Set<Request> generateRequests() {
+    private List<Request> generateRequests() {
         int nofRequests = (int) (Math.random() * MAX_REQUESTS_PER_CYCLE);
 
-        HashSet<Request> requests = new HashSet<>();
+        List<Request> requests = new ArrayList<>();
         for (int i = 0; i < nofRequests; i++) {
-            Request r = new Request((int) (Math.random() * MAX_REQUEST_LATENCY) + 1);
-            requests.add(r);
+            requests.add(new Request((int) (Math.random() * MAX_REQUEST_LATENCY) + 1));
         }
 
         return requests;
+    }
+
+    private void processMetrics(final MetricsEmitter emitter) {
+        // summarize all metrics
+        for (String metric : emitter.getAllMetrics()) {
+            log.info("data({}) = {}", metric, emitter.getValues(metric));
+            log.info("avg({}) = {}", metric, emitter.getAverage(metric));
+        }
     }
 
     public static void main(String[] args) {

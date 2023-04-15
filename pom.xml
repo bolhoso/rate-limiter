@@ -28,6 +28,12 @@
             <version>2.14.1</version>
         </dependency>
 
+        <!-- Apache common collections dependency -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
 
         <!-- Lombok dependency -->
         <dependency>
@@ -40,6 +46,32 @@
 
     <build>
         <plugins>
+            <!--download docs and source -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>download-sources</id>
+                        <goals>
+                            <goal>sources</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                    <execution>
+                        <id>download-javadoc</id>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
